@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     seedLocations();
     updateHeatmap();
     
-    // Attempt to fetch live data from internal API, fallback to simulation if offline
-    setInterval(fetchNetworkTraffic, 3000);
+    // Currently using simulation engine. Once you build a backend, swap this to fetchNetworkTraffic
+    setInterval(simulateNetworkTraffic, 3000);
 });
 
 // New Fetch Logic
