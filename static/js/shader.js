@@ -6,23 +6,23 @@ L.WaterShaderLayer = L.Layer.extend({
         // This ensures the canvas matches screen resolution and doesn't pan physically.
         // The shader itself will handle the panning by recalculating point coordinates.
         this._canvas = L.DomUtil.create('canvas', 'leaflet-water-shader-layer');
-        this._canvas.style.position = 'absolute';
-        this._canvas.style.top = 0;
-        this._canvas.style.left = 0;
         this._canvas.style.pointerEvents = 'none'; // Allow clicking through to map/tooltips
-        this._canvas.style.zIndex = 350; // Above tilePane, below tooltips
         
         var size = this._map.getSize();
         this._canvas.width = size.x;
         this._canvas.height = size.y;
         
-        this._map.getContainer().appendChild(this._canvas);
+        // Append to overlayPane to ensure proper Leaflet z-index stacking (above tilePane, below tooltips)
+        this._map.getPanes().overlayPane.appendChild(this._canvas);
         
         this.locations = [];
         
         this._initWebGL();
         
         this._map.on('resize', this._resize, this);
+        this._map.on('move', this._resetCanvasPosition, this);
+        
+        this._resetCanvasPosition();
         
         // Start render loop
         this._lastTime = performance.now();
@@ -30,8 +30,9 @@ L.WaterShaderLayer = L.Layer.extend({
     },
     
     onRemove: function (map) {
-        this._map.getContainer().removeChild(this._canvas);
+        this._map.getPanes().overlayPane.removeChild(this._canvas);
         this._map.off('resize', this._resize, this);
+        this._map.off('move', this._resetCanvasPosition, this);
         cancelAnimationFrame(this._animFrame);
     },
     
@@ -43,6 +44,13 @@ L.WaterShaderLayer = L.Layer.extend({
         var size = e.newSize;
         this._canvas.width = size.x;
         this._canvas.height = size.y;
+        this._resetCanvasPosition();
+    },
+    
+    _resetCanvasPosition: function() {
+        // Counter-act Leaflet's pane panning by translating the canvas back to the screen's [0,0]
+        var topLeft = this._map.containerPointToLayerPoint([0, 0]);
+        L.DomUtil.setPosition(this._canvas, topLeft);
     },
     
     _initWebGL: function () {
@@ -83,22 +91,22 @@ L.WaterShaderLayer = L.Layer.extend({
                     
                     float dist = distance(st, dropPos);
                     
-                    float age = 1.0 - intensity; 
-                    float radius = age * 120.0; // Riple expands up to 120px
+                    // Continuous expanding wave math based on u_time
+                    float wavePhase = dist * 0.05 - u_time * 4.0;
+                    float wave = sin(wavePhase);
                     
-                    // Primary expanding ring
-                    float ring = 1.0 - smoothstep(0.0, 3.0, abs(dist - radius));
+                    // Smooth the sine wave into a sharp crest
+                    float ring = smoothstep(0.8, 1.0, wave);
                     
-                    // Secondary inner echo ring for water ripple feel
-                    float innerRing = 1.0 - smoothstep(0.0, 2.0, abs(dist - radius * 0.7));
-                    ring += innerRing * 0.4;
+                    // Mask it so the ripples fade out smoothly at the edges (radius 120px)
+                    float mask = 1.0 - smoothstep(0.0, 120.0, dist);
                     
-                    // Solid core when it first drops
-                    float core = (1.0 - smoothstep(0.0, 10.0, dist)) * (intensity * 2.0);
+                    // Solid core that pulses
+                    float core = (1.0 - smoothstep(0.0, 5.0, dist)) * (0.5 + 0.5 * sin(u_time * 8.0));
                     ring += core;
                     
                     // Fade out exponentially based on intensity
-                    ring *= intensity * intensity * intensity;
+                    ring *= mask * (intensity * intensity);
                     
                     totalGlow += ring;
                 }
