@@ -21,7 +21,7 @@ const MOCK_TORRENTS = [
 ];
 
 let map;
-let heatLayer;
+let shaderLayer;
 let tooltipLayer;
 let activeLocations = [];
 const MAX_LOCATIONS = 150; 
@@ -148,23 +148,12 @@ function simulateNetworkTraffic() {
 }
 
 function updateHeatmap() {
-    // 1. Update visual heatmap layer
-    const heatData = activeLocations.map(loc => [loc.lat, loc.lng, loc.intensity]);
-    
-    if (heatLayer) {
-        heatLayer.setLatLngs(heatData);
+    // 1. Update visual WebGL Shader Layer
+    if (shaderLayer) {
+        shaderLayer.setLocations(activeLocations);
     } else {
-        heatLayer = L.heatLayer(heatData, {
-            radius: 12, 
-            blur: 10,
-            maxZoom: 10,
-            gradient: {
-                0.3: '#06b6d4', 
-                0.6: '#3b82f6', 
-                0.8: '#8b5cf6', 
-                1.0: '#ec4899'  
-            }
-        }).addTo(map);
+        shaderLayer = L.waterShaderLayer().addTo(map);
+        shaderLayer.setLocations(activeLocations);
     }
 
     // 2. Update invisible interactive markers for hover tooltips
