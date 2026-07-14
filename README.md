@@ -1,11 +1,11 @@
 # Kosova Torrent Traffic Dashboard
 
-A lightweight, real-time dashboard visualizing network activity and file transfer density across the geographic borders of Kosovo. 
+A lightweight, real-time dashboard visualizing network activity and file transfer density across the geographic borders of Kosova. 
 
 🌐 **Live Demo:** [https://shdynila.github.io/kosova-torrent-traffic/](https://shdynila.github.io/kosova-torrent-traffic/)
 
 ## Overview
-This interactive heatmap uses `Leaflet.js` and `Turf.js` to strictly constrain network density coordinates within a custom GeoJSON cutout of Kosovo's national borders. 
+This interactive heatmap uses `Leaflet.js` and `Turf.js` to strictly constrain network density coordinates within a custom GeoJSON cutout of Kosova's national borders. 
 
 The dashboard runs entirely client-side and paints intense network concentrations while preventing "heatmap bleed" into neighboring geographies.
 

@@ -32,9 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
     seedLocations();
     updateHeatmap();
     
-    // Simulate real-time heatmap fluctuations
-    setInterval(simulateNetworkTraffic, 2000);
+    // Attempt to fetch live data from internal API, fallback to simulation if offline
+    setInterval(fetchNetworkTraffic, 3000);
 });
+
+// New Fetch Logic
+async function fetchNetworkTraffic() {
+    try {
+        // Placeholder for your internal network API
+        // Example: fetch('https://api.your-network.com/internal-torrent-metrics')
+        const response = await fetch('http://localhost:8080/api/torrent-metrics');
+        
+        if (!response.ok) throw new Error("API not reachable");
+        
+        const liveData = await response.json();
+        
+        // Feed the live data into the dashboard 
+        // Expected format: [{lat, lng, intensity, torrent}, ...]
+        activeLocations = liveData; 
+        updateHeatmap();
+        
+    } catch (error) {
+        // Gracefully fallback to the simulation engine so the UI remains active
+        simulateNetworkTraffic(); 
+    }
+}
 
 function initMap() {
     const bounds = L.latLngBounds(
