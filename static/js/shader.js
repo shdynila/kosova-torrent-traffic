@@ -148,7 +148,7 @@ L.WaterShaderLayer = L.Layer.extend({
         // Pre-fetch uniform array locations for performance
         this.uDrops = [];
         for(let i = 0; i < 150; i++) {
-            this.uDrops.push(gl.getUniformLocation(program, \`u_Drops[\${i}]\`));
+            this.uDrops.push(gl.getUniformLocation(program, "u_Drops[" + i + "]"));
         }
         
         // Enable additive blending
