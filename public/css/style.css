@@ -1,0 +1,42 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0f172a;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+}
+
+/* Custom Map Styles */
+.leaflet-container { background: #0f172a; }
+
+/* Custom Tooltip Styling for Hover */
+.leaflet-tooltip.custom-tooltip {
+    background: rgba(30, 41, 59, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(139, 92, 246, 0.5); /* Purple border */
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.leaflet-tooltip-top.custom-tooltip::before {
+    border-top-color: rgba(139, 92, 246, 0.5);
+}
+
+.custom-tooltip strong {
+    color: #ec4899; /* Pink accent */
+}
