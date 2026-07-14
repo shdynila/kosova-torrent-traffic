@@ -91,15 +91,15 @@ L.WaterShaderLayer = L.Layer.extend({
                     
                     float dist = distance(st, dropPos);
                     
-                    // Continuous expanding wave math based on u_time
-                    float wavePhase = dist * 0.05 - u_time * 4.0;
+                    // Continuous expanding wave math based on u_time (tightened for smaller ripples)
+                    float wavePhase = dist * 0.1 - u_time * 4.0;
                     float wave = sin(wavePhase);
                     
                     // Smooth the sine wave into a sharp crest
                     float ring = smoothstep(0.8, 1.0, wave);
                     
-                    // Mask it so the ripples fade out smoothly at the edges (radius 120px)
-                    float mask = 1.0 - smoothstep(0.0, 120.0, dist);
+                    // Mask it so the ripples fade out smoothly at the edges (reduced to radius 60px)
+                    float mask = 1.0 - smoothstep(0.0, 60.0, dist);
                     
                     // Solid core that pulses
                     float core = (1.0 - smoothstep(0.0, 5.0, dist)) * (0.5 + 0.5 * sin(u_time * 8.0));
